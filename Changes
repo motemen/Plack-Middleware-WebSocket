@@ -1,0 +1,4 @@
+Revision history for Perl extension Plack::Middleware::WebSocket
+
+0.01    Tue Oct 19 23:04:03 2010
+        - original version
