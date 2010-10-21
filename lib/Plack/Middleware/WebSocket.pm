@@ -67,7 +67,8 @@ sub handshake {
         'Upgrade: WebSocket',
         'Connection: Upgrade',
         "Sec-WebSocket-Origin: $env->{HTTP_ORIGIN}",
-        "Sec-WebSocket-Location: ws://$env->{HTTP_HOST}$env->{SCRIPT_NAME}$env->{PATH_INFO}",
+        "Sec-WebSocket-Location: ws://$env->{HTTP_HOST}$env->{SCRIPT_NAME}$env->{PATH_INFO}"
+        . ($env->{QUERY_STRING} ? "?$env->{QUERY_STRING}" : ""),
         '',
         $digest,
     );
