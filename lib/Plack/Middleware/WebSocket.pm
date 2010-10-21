@@ -92,23 +92,46 @@ sub anyevent_read_type {
     };
 }
 
-$INC{+__PACKAGE__} = __FILE__;
-
 1;
 
 __END__
 
 =head1 NAME
 
-Plack::Middleware::WebSocket -
+Plack::Middleware::WebSocket - Support WebSocket implementation
 
 =head1 SYNOPSIS
 
-  use Plack::Middleware::WebSocket;
+  builder {
+      enable 'WebSocket';
+      sub {
+          my $env = shift;
+          ...
+          if (my $fh = $env->{'websocket.impl'}->handshake) {
+              # interact via $fh
+              ...
+          } else {
+              $res->code($env->{'websocket.impl'}->error_code);
+          }
+      };
+  };
+
 
 =head1 DESCRIPTION
 
-Plack::Middleware::WebSocket is
+Plack::Middleware::WebSocket provides WebSocket implementation through $env->{'websocket.impl'}.
+Currently implements draft-ietf-hybi-thewebsocketprotocol-00 <http://tools.ietf.org/html/draft-ietf-hybi-thewebsocketprotocol-00>.
+
+=head1 METHODS
+
+=over 4
+
+=item my $fh = $env->{'websocket.impl'}->handshake;
+
+Starts WebSocket handshake and returns filehandle on successful handshake.
+If failed, $env->{'websocket.impl'}->error_code is set to an HTTP code.
+
+=back
 
 =head1 AUTHOR
 

@@ -1,0 +1,47 @@
+=head1 NAME
+
+Plack::Middleware::WebSocket - Support WebSocket implementation
+
+=head1 SYNOPSIS
+
+  builder {
+      enable 'WebSocket';
+      sub {
+          my $env = shift;
+          ...
+          if (my $fh = $env->{'websocket.impl'}->handshake) {
+              # interact via $fh
+              ...
+          } else {
+              $res->code($env->{'websocket.impl'}->error_code);
+          }
+      };
+  };
+
+
+=head1 DESCRIPTION
+
+Plack::Middleware::WebSocket provides WebSocket implementation through $env->{'websocket.impl'}.
+Currently implements draft-ietf-hybi-thewebsocketprotocol-00 <http://tools.ietf.org/html/draft-ietf-hybi-thewebsocketprotocol-00>.
+
+=head1 METHODS
+
+=over 4
+
+=item my $fh = $env->{'websocket.impl'}->handshake;
+
+Starts WebSocket handshake and returns filehandle on successful handshake.
+If failed, $env->{'websocket.impl'}->error_code is set to an HTTP code.
+
+=back
+
+=head1 AUTHOR
+
+motemen E<lt>motemen@gmail.comE<gt>
+
+=head1 SEE ALSO
+
+=head1 LICENSE
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
