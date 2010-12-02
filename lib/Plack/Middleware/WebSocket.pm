@@ -62,18 +62,26 @@ sub handshake {
 
     $fh->autoflush;
 
+    my $proto = $self->is_secure_websocket($env) ? "wss" : "ws";
+
     print $fh join "\015\012", (
         'HTTP/1.1 101 Web Socket Protocol Handshake',
         'Upgrade: WebSocket',
         'Connection: Upgrade',
         "Sec-WebSocket-Origin: $env->{HTTP_ORIGIN}",
-        "Sec-WebSocket-Location: ws://$env->{HTTP_HOST}$env->{SCRIPT_NAME}$env->{PATH_INFO}"
+        "Sec-WebSocket-Location: $proto://$env->{HTTP_HOST}$env->{SCRIPT_NAME}$env->{PATH_INFO}"
         . ($env->{QUERY_STRING} ? "?$env->{QUERY_STRING}" : ""),
         '',
         $digest,
     );
 
     return $fh;
+}
+
+sub is_secure_websocket {
+  my ($self, $env) = @_;
+  my $proto = $env->{HTTP_X_FORWARDED_PROTO} || $env->{'psgi.url_scheme'};
+  return $proto eq "https";
 }
 
 package AnyEvent::Handle::Message::WebSocket;
