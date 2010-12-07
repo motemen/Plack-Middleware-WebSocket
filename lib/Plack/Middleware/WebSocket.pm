@@ -62,12 +62,14 @@ sub handshake {
 
     $fh->autoflush;
 
+    my $proto = $env->{'psgi.url_scheme'} eq "https" ? "wss" : "ws";
+
     print $fh join "\015\012", (
         'HTTP/1.1 101 Web Socket Protocol Handshake',
         'Upgrade: WebSocket',
         'Connection: Upgrade',
         "Sec-WebSocket-Origin: $env->{HTTP_ORIGIN}",
-        "Sec-WebSocket-Location: ws://$env->{HTTP_HOST}$env->{SCRIPT_NAME}$env->{PATH_INFO}"
+        "Sec-WebSocket-Location: $proto://$env->{HTTP_HOST}$env->{SCRIPT_NAME}$env->{PATH_INFO}"
         . ($env->{QUERY_STRING} ? "?$env->{QUERY_STRING}" : ""),
         '',
         $digest,
@@ -133,6 +135,19 @@ Starts WebSocket handshake and returns filehandle on successful handshake.
 If failed, $env->{'websocket.impl'}->error_code is set to an HTTP code.
 
 =back
+
+=head1 Secure WebSockets (wss://)
+
+If you are using this middleware behind an SSL HTTP proxy, like STunnel, you should
+use L<Plack::Middleware::ReverseProxy>. If you do not use the ReverseProxy
+middleware you will get handshake mismatch errors on the client.
+
+  builder {
+    enable_if { $_[0]->{REMOTE_ADDR} eq '127.0.0.1' } 
+              "Plack::Middleware::ReverseProxy";
+    enable "WebSocket";
+    $app; 
+  };
 
 =head1 AUTHOR
 
