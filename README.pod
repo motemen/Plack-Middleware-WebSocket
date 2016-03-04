@@ -1,5 +1,7 @@
 =head1 OBSOLETE - Not up to date with the latest protocol
 
+Maybe you're searching for: L<Plack::App::WebSocket>
+
 =head1 NAME
 
 Plack::Middleware::WebSocket - Support WebSocket implementation
